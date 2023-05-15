@@ -27,6 +27,9 @@ function calcularEdad() {
         const ahora_anio = ahora.getFullYear();
         const ahora_mes = ahora.getMonth();
         const ahora_dia = ahora.getDate();
+        const ahora_hora = ahora.getHours();
+        const ahora_minutos = ahora.getMinutes();
+        const ahora_segundos = ahora. getSeconds();
 
         //fecha de nacimiento
         const nacimiento_fecha = new Date(nacimiento);
@@ -78,8 +81,9 @@ function calcularEdad() {
             mensajeDiasRestantes = `Faltan ${dias_restantes} para tu próximo cumpleaños`;
         }
         return `Usted nació un día ${nacimiento_diaSemana}. <br>
-                Su edad es de ${edad} años. <br>
-                ${mensajeDiasRestantes} `;
+                Su edad es de ${edad} años, ${meses} meses y ${dias} días. <br>
+                ${mensajeDiasRestantes}  <br>
+                Consulta realizada a las ${ahora_hora} : ${ahora_minutos} : ${ahora_segundos}`;
     } else {
         return 'La fecha es inválida';
     }
@@ -93,7 +97,60 @@ buttonFechaNacimiento.addEventListener('click' , function(e) {
 
 function calcularPermanencia(fecha_ingreso, hoy) {
     if (validarFecha(fecha_ingreso) && validarFecha(hoy)) {
+        const ahora_anio = hoy.getFullYear();
+        const ahora_mes = hoy.getMonth();
+        const ahora_dia = hoy.getDate();
 
+        const ingreso_anio = fecha_ingreso.getFullYear();
+        const ingreso_mes = fecha_ingreso.getMonth();
+        const ingreso_dia = fecha_ingreso.getDate();
+
+        let permanencia = ahora_anio - ingreso_anio;
+        if (ahora_mes < ingreso_mes) {
+            permanencia--;
+        }
+        if (ahora_mes == ingreso_mes && ahora_dia < ingreso_dia) {
+            permanencia--;
+        }
+
+        let meses = 0;
+        if (ahora_mes > ingreso_mes) {
+            meses = ahora_mes - ingreso_mes;
+        }
+        if (ingreso_mes > ahora_mes) {
+            meses = 12 - (ingreso_mes - ahora_mes);
+        }
+        if (ahora_dia < ingreso_dia) {
+            meses--;
+        }
+
+        let dias = 0;
+        if (ahora_dia >  ingreso_dia){
+            dias = ahora_dia - ingreso_dia;
+        }
+        if (ahora_dia < ingreso_dia) {
+            ultimoDiaMes = new Date(ahora_anio, ahora_mes, 0);
+            dias = ultimoDiaMes.getDate()- (ingreso_dia - ahora_dia);
+        }
+        let milisegundosPorDia = 1000*60*60*24;
+
+        let dias_restantes = 0;
+        let ingreso_aniversario = new Date(ahora_anio, ingreso_mes, ingreso_dia);
+        if (ingreso_aniversario < hoy) {
+            ingreso_aniversario.setFullYear(ahora_anio + 1); 
+        }
+        dias_restantes = Math.floor((ingreso_aniversario.getTime() - hoy.getTime())/milisegundosPorDia);
+        let mensajeDiasRestantes;
+        if (dias_restantes==0) {
+            mensajeDiasRestantes = 'Hoy estás de aniversario de permanencia en la empresa.';
+        } else {
+            mensajeDiasRestantes = `Faltan ${dias_restantes} para tu próximo año de permanencia.`;
+        }
+
+        return `Tienes una permanencia de ${permanencia}, con ${meses} meses y ${dias} días. <br>
+                ${mensajeDiasRestantes} `;
+    } else {
+        return 'Parámetro incorrecto';
     }
 }
 
